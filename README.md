@@ -1,14 +1,16 @@
 # Library Index
 
 
-This is a media library indexer for NodeJS to asynchronously traverse your library root folder(s) and catalog their media files. 
+This is a media library indexer for NodeJS that asynchronously traverses your library root folder(s) and catalogs media files, indexes some metadata and file information, and saves a JSON catalog for music software. 
+
+You can clone the project and run it from a command line:
 
     $ node indexer.js scan /path/to/music /optional/second/path
 
-Or in NodeJS: 
+Or use it as a module in NodeJS to support your project: 
 
     const libraryIndex = require('library-index)
-    await libraryIndex.scan(['/path/to/music', '/other/path/to/music'])
+    const library = await library.load(['/path/to/music', '/other/path/to/music'])
 
 Each library folder you specify will save a `library.json` file.  When you load your library these files are merged together into a single library.
 
