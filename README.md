@@ -151,7 +151,6 @@ This is the data structure of the index.
         sortName           string
         albums             array [ albumids ]
         artists            array [ artistids ]
-        composers          array [ composerids ]
         genres             array [ genreids ]
         tracks             array [ trackids ]
       }],
