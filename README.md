@@ -1,8 +1,7 @@
 # Library Index
 
-This is a media library indexer for NodeJS servers to asynchronously traverse a root folder, expecting artist folders within it, and album folders within them, to catalog any media files that it finds.  After cataloging the media the indexer will save the JSON data, optionally compressed with GZIP.
 
-Multiple folders can be indexed.  Each will contain their own JSON catalogs, that merge into a single catalog when loading.
+This is a media library indexer for NodeJS servers to asynchronously traverse a folder(s) to catalog media files.  After indexing the JSON data will be saved, optionally compressed with GZIP, in each library folder you specify.  When loading your index each library folder's JSON data is merged.  Media file and folder structure should be in `/library/artist/album/file`.
 
 - [Supported folder structure](#supported-folder-structure)
 - [Indexing media from command line](#indexing-media-from-command-line)
@@ -10,34 +9,27 @@ Multiple folders can be indexed.  Each will contain their own JSON catalogs, tha
 - [Using the media index with NodeJS](#using-the-media-index-with-nodejs)
 - [Library data structure](#library-data-structure)
 
-## Supported folder structure
-
-/library/artist/file
-/library/artist/album/file
-/library/artist/album/subfolders/file
-
-[Top of page](#)
-
 ## Indexing media from command line 
 
     $ git clone https//github.com/openaudioserver/library-scanner
     $ cd library-scanner
     $ npm install
 
-Scan then load library path:
+Scan a single library path:
 
     $ node indexer.js scan /path/to/music
-    $ node indexer.js load /path/to/music
 
 Scan a library with multiple folders:
 
     $ node indexer.js scan /path/to/music /path/to/more/music /path/to/other/music
-    $ node indexer.js load /path/to/music /path/to/more/music /path/to/other/music
 
 Compress the index with gzip:
 
     $ GZIP=true node indexer.js scan /path/to/music
-    $ node indexer.js load /path/to/music
+
+Loading a library from the command line outputs the JSON data:
+
+    $ node indexer.js load /path/to/music /path/to/more/music /path/to/other/music
 
 [Top of page](#)
 
@@ -162,8 +154,8 @@ This is the data structure of the index.
       }]
     }
 
-
 [Top of page](#)
+
 ## License
 
 MIT
