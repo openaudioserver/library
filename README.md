@@ -1,24 +1,24 @@
 # Library Index
 
-This is a media library indexer for NodeJS servers to asynchronously traverse a root folder, expecting artist folders within it, and album folders within them, to catalog any media files that it finds.  After cataloging the media the indexer will save it, optionally compressed.
+This is a media library indexer for NodeJS servers to asynchronously traverse a root folder, expecting artist folders within it, and album folders within them, to catalog any media files that it finds.  After cataloging the media the indexer will save the JSON data, optionally compressed with GZIP.
 
 Multiple folders can be indexed.  Each will contain their own JSON catalogs, that merge into a single catalog when loading.
 
-## Why use this
+## Supported folder structure
 
-You can use this module if you are writing NodeJS software or tools for music libraries and audiophiles.
-
-## Required folder structure
-
-/library-folder/artist/album/file
-/library-folder/artist/file
-/library-folder/file
+/library/artist/album/file
+/library/artist/file
+/library/file
 
 ## Add to your NodeJS project
 
     $ npm install node-media-library
 
-### Run the indexer
+### Run the indexer from command line
+
+    $ git clone https://github.com/openaudioserver/library-scanner
+    $ cd library-scanner
+    $ npm install
 
 Create a JSON index:
 
@@ -62,9 +62,9 @@ Compress the index with gzip:
         displayTitle:       string
         sortTitle:          string
         year:               integer
-        artists:            <array>[ artistids ]
-        composers:          <array>[ composerids ]
-        genres:             <array>[ genreids ]
+        artists:            array [ artistids ]
+        composers:          array [ composerids ]
+        genres:             array [ genreids ]
         album:              string
         albumFolder:        string
         albumPath:          string
@@ -73,7 +73,7 @@ Compress the index with gzip:
         artistPath:         string
         libraryPath:        string
         file: {
-          bitRate:          int
+          bitRate:          integer
           codec:            string
           container:        string
           duration:         float
@@ -89,10 +89,10 @@ Compress the index with gzip:
         name:               string
         displayName:        string
         sortName:           string
-        artists:            <array>[ artistids ]
-        composers:          <array>[ composerids ]
-        genres:             <array>[ genreids ]
-        tracks:             <array>[ trackids ]
+        artists:            array [ artistids ]
+        composers:          array [ composerids ]
+        genres:             array [ genreids ]
+        tracks:             array [ trackids ]
       }],
       artists: [{
         type:               artist
@@ -100,10 +100,10 @@ Compress the index with gzip:
         name:               string
         displayName:        string
         sortName:           string
-        albums:             <array>[ albumids ]
-        composers:          <array>[ composerids ]
-        genres:             <array>[ genreids ]
-        tracks:             <array>[ trackids ]
+        albums:             array [ albumids ]
+        composers:          array [ composerids ]
+        genres:             array [ genreids ]
+        tracks:             array [ trackids ]
       }],
       composers: [{
         type:               composer
@@ -111,11 +111,11 @@ Compress the index with gzip:
         name:               string
         displayName:        string
         sortName:           string
-        albums:             <array>[ albumids ]
-        artists:            <array>[ artistids ]
-        composers:          <array>[ composerids ]
-        genres:             <array>[ genreids ]
-        tracks:             <array>[ trackids ]
+        albums:             array [ albumids ]
+        artists:            array [ artistids ]
+        composers:          array [ composerids ]
+        genres:             array [ genreids ]
+        tracks:             array [ trackids ]
       }],
       genres: [{
         type:               genre
@@ -123,10 +123,10 @@ Compress the index with gzip:
         name:               string
         displayName:        string
         sortName:           string
-        albums:             <array>[ albumids ]
-        artists:            <array>[ artistids ]
-        composers:          <array>[ composerids ] 
-        tracks:             <array>[ trackids ]
+        albums:             array [ albumids ]
+        artists:            array [ artistids ]
+        composers:          array [ composerids ] 
+        tracks:             array [ trackids ]
       }]
     }
 
