@@ -1,0 +1,19 @@
+{
+  "name": "@openaudioserver/library-index",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/openaudioserver/library-index"
+  },
+  "author": {
+    "name": "openaudioserver",
+    "email": "openaudioserver@protonmail.com",
+    "url": "http://github.com/openaudioserver"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "music-metadata": "^7.8.8"
+  }
+}
