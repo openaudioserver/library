@@ -46,17 +46,8 @@ async function indexMedia (libraryPath, folderPath, media, existingData, readExi
       id: `track_${media.length + 1}`,
       type: 'audio',
       fileName: filePath.substring(path.join(libraryPath, fileParts[0], fileParts[1]).length + 1),
-      title: metaData.common.title,
-      displayTitle: metaData.common.displaytitle,
-      sortTitle: metaData.common.sortitle,
-      year: metaData.common.year || '',
-      album: metaData.common.album || fileParts[1],
       albumFolder: fileParts[1],
       artistFolder: fileParts[0],
-      artistPath: filePath.substring(0, filePath.indexOf(fileParts[0]) + fileParts[0].length),
-      libraryPath,
-      comment: metaData.common.comment ? metaData.common.comment.join('\n') : '',
-      path: filePath,
       size: fileStat.size,
       duration: metaData.format.duration,
       bitRate: metaData.format.bitrate,
@@ -64,7 +55,13 @@ async function indexMedia (libraryPath, folderPath, media, existingData, readExi
       fileContainer: metaData.format.container.toLowerCase(),
       sampleRate: metaData.format.container.sampleRate,
       numberOfChannels: metaData.format.container.numberOfChannels,
-      lossless: metaData.format.lossless
+      lossless: metaData.format.lossless,
+      title: metaData.common.title,
+      titleDisplay: metaData.common.displaytitle,
+      titleSort: metaData.common.sortitle,
+      album: metaData.common.album || fileParts[1],
+      albumArtist: metaData.common.albumartist || fileParts[0],
+      comment: metaData.common.comment ? metaData.common.comment.join('\n') : '',
     }
     if (metaData.common.disk && metaData.common.disk.no) {
       track.discNumber = metaData.common.disk.no
