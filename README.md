@@ -1,9 +1,19 @@
 # Library Index
 
 
-This is a media library indexer for NodeJS servers to asynchronously traverse a folder(s) to catalog media files.  After indexing the JSON data will be saved, optionally compressed with GZIP, in each library folder you specify.  When loading your index each library folder's JSON data is merged.  Media file and folder structure should be in `/library/artist/album/file`.
+This is a media library indexer for NodeJS to asynchronously traverse your library root folder(s) and catalog their media files. 
 
-- [Supported folder structure](#supported-folder-structure)
+    $ node indexer.js scan /path/to/music
+
+    const libraryIndex = require('library-index)
+    await libraryIndex.scan(['/path/to/music', '/other/path/to/music'])
+
+Each library folder you specify will save a `library.json` file.  When you load your library these files are merged together into a single library.
+
+Your folder structure should be `/library/artist/album/file`.
+
+### Documentation
+
 - [Indexing media from command line](#indexing-media-from-command-line)
 - [Indexing media with NodeJS](#indexing-media-with-nodejs)
 - [Using the media index with NodeJS](#using-the-media-index-with-nodejs)
@@ -31,7 +41,7 @@ Loading a library from the command line outputs the JSON data:
 
     $ node indexer.js load /path/to/music /path/to/more/music /path/to/other/music
 
-[Top of page](#)
+[Top of page](#documentation)
 
 ## Indexing media with NodeJS
 
@@ -53,7 +63,7 @@ Load the library:
       '/path/to/other/music'
     ])
 
-[Top of page](#)
+[Top of page](#documentation)
 
 ## Using the media index with NodeJS
 
@@ -74,7 +84,7 @@ Library arrays can be filtered, sorted, and paginated for you.  Any array field 
       <field>Match         string
     })
 
-[Top of page](#)
+[Top of page](#documentation)
 
 ## Library data structure
 
@@ -154,7 +164,7 @@ This is the data structure of the index.
       }]
     }
 
-[Top of page](#)
+[Top of page](#documentation)
 
 ## License
 
