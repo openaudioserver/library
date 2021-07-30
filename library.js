@@ -56,6 +56,51 @@ async function load (libraryPaths) {
       }
     }
   }
+  const remappings = {}
+  const uniqueArtists = {}
+  for (const artist of library.artists) {
+    const normalizedName = normalize(artist.name)
+    if (uniqueArtists[normalizedName]) {
+      remappings[artist.id] = remappings[normalizedName].id
+      library.artists.splice(library.artists.indexOf(artist), 1)
+    } else {
+      uniqueArtists[normalizedName] = artist
+    }
+  }
+  const uniqueGenres = {}
+  for (const genre of library.genres) {
+    const normalizedName = normalize(genre.name)
+    if (uniqueGenres[normalizedName]) {
+      remappings[genre.id] = remappings[normalizedName].id
+      library.genres.splice(library.genres.indexOf(genre), 1)
+    } else {
+      uniqueGenres[normalizedName] = genre
+    }
+  }
+  const uniqueComposers = {}
+  for (const composer of library.composers) {
+    const normalizedName = normalize(composer.name)
+    if (uniqueComposers[normalizedName]) {
+      remappings[composer.id] = remappings[normalizedName].id
+      library.composers.splice(library.composers.indexOf(composer), 1)
+    } else {
+      uniqueComposers[normalizedName] = composer
+    }
+  }
+  for (const collection of [ 'albums', 'composers', 'artists', 'genres', 'media']) {
+    for (const item of library[collection]) {
+      for (const field in collection) {
+        if (!item[field] || !Array.isArray(item[field]) || !item[field].length || !item[0].substring) {
+          continue
+        }
+        for (const i in item[field]) {
+          if (remappings[item[field][i]]) {
+            item[field][i] = remappings[item[field][i]]
+          }
+        }
+      }
+    }
+  }
   library.getObject = (idOrFilePath) => {
     if (idOrFilePath.startsWith('/')) {
       if (mediaIndex[idOrFilePath]) {
