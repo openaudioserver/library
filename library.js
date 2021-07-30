@@ -61,6 +61,12 @@ async function load (libraryPaths) {
 async function loadLibraryData (libraryPath, libraryData) {
   const newData = await loadJSONFile(libraryPath, 'library.json')
   for (const key in newData) {
+    if (key === 'media') {
+      newData[key].libraryPath = libraryPath
+      newData[key].artistPath = path.join(libraryPath, newData[key].artistFolder)
+      newData[key].albumPath = path.join(libraryPath, newData[key].artistFolder, newData[key].albumFolder)
+      newData[key].filePath = path.join(libraryPath, newData[key].artistFolder, newData[key].albumFolder, newData[key].fileName)
+    }
     libraryData[key] = libraryData[key] || []
     libraryData[key] = libraryData[key].concat(newData[key])
   }
