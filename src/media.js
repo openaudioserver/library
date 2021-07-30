@@ -61,7 +61,7 @@ async function indexMedia (libraryPath, folderPath, media, existingData, readExi
       titleSort: metaData.common.sortitle,
       album: metaData.common.album || fileParts[1],
       albumArtist: metaData.common.albumartist || fileParts[0],
-      comment: metaData.common.comment ? metaData.common.comment.join('\n') : '',
+      comment: metaData.common.comment ? metaData.common.comment.join('\n') : ''
     }
     if (metaData.common.disk && metaData.common.disk.no) {
       track.discNumber = metaData.common.disk.no
