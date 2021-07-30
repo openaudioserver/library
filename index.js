@@ -1,8 +1,8 @@
 
 module.exports = {
-  index: async (libraryPathString) => {
+  scan: async (libraryPathString) => {
     const indexer = require('./indexer.js')
-    return indexer.start(libraryPathString)
+    return indexer.scan(libraryPathString)
   },
   load: async (libraryPathString) => {
     const library = require('./library.js')

@@ -16,7 +16,7 @@ const artistIndexer = require('./src/artists.js')
 const mediaIndexer = require('./src/media.js')
 
 module.exports = {
-  start
+  scan
 }
 
 if (process.argv[2] === 'scan') {
@@ -44,12 +44,12 @@ async function commandLineStart () {
     libraryPaths.push(folderPath)
     index++
   }
-  await start(libraryPaths, true)
+  await scan(libraryPaths, true)
   console.log('[indexer]', 'finished scanning')
   return process.exit(0)
 }
 
-async function start (libraryPaths, readExistingFiles) {
+async function scan (libraryPaths, readExistingFiles) {
   const startTime = process.hrtime()
   if (libraryPaths.length > 1) {
     console.log('[indexer]', 'scanning multiple paths')

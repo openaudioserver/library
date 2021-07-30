@@ -51,7 +51,7 @@ Loading a library from the command line outputs the JSON data:
 
 Run the indexer:
 
-    await libraryIndex.index([
+    await libraryIndex.scan([
       '/path/to/music',
       '/path/to/more/music',
       '/path/to/other/music'
