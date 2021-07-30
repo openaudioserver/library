@@ -5,7 +5,7 @@ This is a media library indexer for NodeJS that asynchronously traverses your li
 
 You can clone the project and run it from a command line:
 
-    $ node indexer.js scan /path/to/music /optional/second/path
+    $ node scanner.js /path/to/music /optional/second/path
 
 Or use it as a module in NodeJS to support your project: 
 
@@ -31,19 +31,19 @@ Your folder structure should be `/library/artist/album/file`.
 
 Scan a single library path:
 
-    $ node indexer.js scan /path/to/music
+    $ node scanner.js /path/to/music
 
 Scan a library with multiple folders:
 
-    $ node indexer.js scan /path/to/music /path/to/more/music /path/to/other/music
+    $ node scanner.js /path/to/music /path/to/more/music /path/to/other/music
 
 Compress the index with gzip:
 
-    $ GZIP=true node indexer.js scan /path/to/music
+    $ GZIP=true node scanner.js /path/to/music
 
 Loading a library from the command line outputs the JSON data:
 
-    $ node indexer.js load /path/to/music /path/to/more/music /path/to/other/music
+    $ node library.js /path/to/music /path/to/more/music /path/to/other/music
 
 [Top of page](#documentation)
 
@@ -51,7 +51,7 @@ Loading a library from the command line outputs the JSON data:
 
     const libraryIndex = require('@openaudioserver/library-index')
 
-Run the indexer:
+Run the scanner:
 
     await libraryIndex.scan([
       '/path/to/music',

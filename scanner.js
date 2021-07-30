@@ -19,7 +19,7 @@ module.exports = {
   scan
 }
 
-if (process.argv[2] === 'scan') {
+if (process.argv[1] === __filename) {
   commandLineStart()
 }
 
@@ -34,7 +34,7 @@ async function existsAsync (itemPath) {
 
 async function commandLineStart () {
   const libraryPaths = []
-  let index = 3
+  let index = 2
   while (true) {
     const folderPath = process.argv[index]
     const exists = await existsAsync(folderPath)
