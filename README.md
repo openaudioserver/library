@@ -1,6 +1,12 @@
 # Library Index
 
-This is a media library indexer for NodeJS servers to scan designated folder(s) and index the songs.  
+This is a media library indexer for NodeJS servers to asynchronously traverse a root folder, expecting artist folders within it, and album folders within them, to catalog any media files that it finds.  After cataloging the media the indexer will save it, optionally compressed.
+
+Multiple folders can be indexed.  Each will contain their own JSON catalogs, that merge into a single catalog when loading.
+
+## Why use this
+
+You can use this module if you are writing NodeJS software or tools for music libraries and audiophiles.
 
 ## Required folder structure
 
@@ -49,7 +55,7 @@ Compress the index with gzip:
 
     LIBRARY OBJECT {
       media: [{
-        type:               *track*
+        type:               track
         id:                 string
         title:              string
         comment:            string
@@ -78,7 +84,7 @@ Compress the index with gzip:
         }
       }],
       albums: [{
-        type:               *album*
+        type:               album
         id:                 string
         name:               string
         displayName:        string
@@ -89,7 +95,7 @@ Compress the index with gzip:
         tracks:             <array>[ trackids ]
       }],
       artists: [{
-        type:               *artist*
+        type:               artist
         id:                 string
         name:               string
         displayName:        string
@@ -100,7 +106,7 @@ Compress the index with gzip:
         tracks:             <array>[ trackids ]
       }],
       composers: [{
-        type:               *composer*
+        type:               composer
         id:                 string
         name:               string
         displayName:        string
