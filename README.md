@@ -3,7 +3,9 @@
 
 This is a media library indexer for NodeJS to asynchronously traverse your library root folder(s) and catalog their media files. 
 
-    $ node indexer.js scan /path/to/music
+    $ node indexer.js scan /path/to/music /optional/second/path
+
+Or in NodeJS: 
 
     const libraryIndex = require('library-index)
     await libraryIndex.scan(['/path/to/music', '/other/path/to/music'])
