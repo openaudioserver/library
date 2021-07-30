@@ -4,54 +4,89 @@ This is a media library indexer for NodeJS servers to asynchronously traverse a 
 
 Multiple folders can be indexed.  Each will contain their own JSON catalogs, that merge into a single catalog when loading.
 
+- [Supported folder structure](#supported-folder-structure)
+- [Indexing media from command line](#indexing-media-from-command-line)
+- [Indexing media with NodeJS](#indexing-media-with-nodejs)
+- [Using the media index with NodeJS](#using-the-media-index-with-nodejs)
+- [Library data structure](#library-data-structure)
+
 ## Supported folder structure
 
-/library/artist/album/file
 /library/artist/file
-/library/file
+/library/artist/album/file
+/library/artist/album/subfolders/file
 
-## Add to your NodeJS project
+[Top of page](#)
 
-    $ npm install node-media-library
-
-### Run the indexer from command line
+## Indexing media from command line 
 
     $ git clone https//github.com/openaudioserver/library-scanner
     $ cd library-scanner
     $ npm install
 
-Create a JSON index
+Scan then load library path:
 
     $ node indexer.js scan /path/to/music
-    $ node indexer.js scan /path/to/music
+    $ node indexer.js load /path/to/music
 
-
-Specify multiple folders
+Scan a library with multiple folders:
 
     $ node indexer.js scan /path/to/music /path/to/more/music /path/to/other/music
     $ node indexer.js load /path/to/music /path/to/more/music /path/to/other/music
 
-Compress the index with gzip
+Compress the index with gzip:
 
-    $ GZIP=true node indexer.js /path/to/music
+    $ GZIP=true node indexer.js scan /path/to/music
+    $ node indexer.js load /path/to/music
 
-### Use the indexed data in your project
+[Top of page](#)
+
+## Indexing media with NodeJS
 
     const libraryIndex = require('@openaudioserver/library-index')
 
-    INDEX LIBRARY
-      await libraryIndex.index([
-        '/path/to/music',
-        '/path/to/more/music',
-        '/path/to/other/music'
-      ])
+Run the indexer:
 
-    LOAD LIBRARY
-      const library = await libraryIndex.load([
-        '/path/to/music',
-        '/path/to/more/music',
-        '/path/to/other/music'
-      ])
+    await libraryIndex.index([
+      '/path/to/music',
+      '/path/to/more/music',
+      '/path/to/other/music'
+    ])
+
+Load the library:
+
+    const library = await libraryIndex.load([
+      '/path/to/music',
+      '/path/to/more/music',
+      '/path/to/other/music'
+    ])
+
+[Top of page](#)
+
+## Using the media index with NodeJS
+
+Library objects can be retrieved with an ID value.  When using this method arrays of ids will be converted into names.
+
+    library.getObject(id)
+
+Library arrays can be filtered, sorted, and paginated for you.  Any array field can be used as a filter with different matching methods.  When using this method arrays of ids will be converted into names.  Default matching is `equal` and default sort is `asc`.
+
+    library.getObjects(array, {
+      sort                 string
+      sortDirection        string asc|desc
+      offset               integer
+      limit                integer
+      keyword              string
+      keywordMatch         string equal|start|end|exclude|contain
+      <field>              string
+      <field>Match         string
+    })
+
+[Top of page](#)
+
+## Library data structure
+
+This is the data structure of the index.
 
     LIBRARY OBJECT {
       media [{
@@ -69,10 +104,8 @@ Compress the index with gzip
         genres             array [ genreids ]
         album              string
         albumFolder        string
-        albumPath          string
         albumArtist        string
         artistFolder       string
-        artistPath         string
         libraryPath        string
         bitRate            integer
         codec              string
@@ -129,6 +162,8 @@ Compress the index with gzip
       }]
     }
 
+
+[Top of page](#)
 ## License
 
 MIT
