@@ -20,7 +20,7 @@ async function indexMedia (libraryPath, folderPath, media, existingData, readExi
     }
     const filePath = path.join(folderPath, item)
     if (!readExistingFiles && existingData) {
-      const existingFile = existingData.filter(item => item.file.path === filePath)[0]
+      const existingFile = existingData.filter(item => item.path === filePath)[0]
       if (existingFile) {
         media.push(existingFile[0])
         continue
@@ -57,17 +57,15 @@ async function indexMedia (libraryPath, folderPath, media, existingData, readExi
       artistPath: filePath.substring(0, filePath.indexOf(fileParts[0]) + fileParts[0].length),
       libraryPath,
       comment: metaData.common.comment ? metaData.common.comment.join('\n') : '',
-      file: {
-        path: filePath,
-        size: fileStat.size,
-        duration: metaData.format.duration,
-        bitRate: metaData.format.bitrate,
-        codec: metaData.format.codec.toLowerCase(),
-        container: metaData.format.container.toLowerCase(),
-        sampleRate: metaData.format.container.sampleRate,
-        numberOfChannels: metaData.format.container.numberOfChannels,
-        lossless: metaData.format.lossless
-      }
+      path: filePath,
+      size: fileStat.size,
+      duration: metaData.format.duration,
+      bitRate: metaData.format.bitrate,
+      codec: metaData.format.codec.toLowerCase(),
+      fileContainer: metaData.format.container.toLowerCase(),
+      sampleRate: metaData.format.container.sampleRate,
+      numberOfChannels: metaData.format.container.numberOfChannels,
+      lossless: metaData.format.lossless
     }
     if (metaData.common.disk && metaData.common.disk.no) {
       track.discNumber = metaData.common.disk.no

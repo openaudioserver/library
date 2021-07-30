@@ -16,22 +16,22 @@ Multiple folders can be indexed.  Each will contain their own JSON catalogs, tha
 
 ### Run the indexer from command line
 
-    $ git clone https://github.com/openaudioserver/library-scanner
+    $ git clone https//github.com/openaudioserver/library-scanner
     $ cd library-scanner
     $ npm install
 
-Create a JSON index:
+Create a JSON index
 
     $ node indexer.js scan /path/to/music
     $ node indexer.js scan /path/to/music
 
 
-Specify multiple folders:
+Specify multiple folders
 
     $ node indexer.js scan /path/to/music /path/to/more/music /path/to/other/music
     $ node indexer.js load /path/to/music /path/to/more/music /path/to/other/music
 
-Compress the index with gzip:
+Compress the index with gzip
 
     $ GZIP=true node indexer.js /path/to/music
 
@@ -54,79 +54,78 @@ Compress the index with gzip:
       ])
 
     LIBRARY OBJECT {
-      media: [{
-        type:               track
-        id:                 string
-        title:              string
-        comment:            string
-        displayTitle:       string
-        sortTitle:          string
-        year:               integer
-        artists:            array [ artistids ]
-        composers:          array [ composerids ]
-        genres:             array [ genreids ]
-        album:              string
-        albumFolder:        string
-        albumPath:          string
-        albumArtist:        string
-        artistFolder:       string
-        artistPath:         string
-        libraryPath:        string
-        file: {
-          bitRate:          integer
-          codec:            string
-          container:        string
-          duration:         float
-          lossless:         boolean
-          numberOfChannels: integer
-          sampleRate:       integer
-          size:             integer
-        }
+      media [{
+        type               track
+        id                 string
+        path               string
+        size               integer
+        title              string
+        comment            string
+        displayTitle       string
+        sortTitle          string
+        year               integer
+        artists            array [ artistids ]
+        composers          array [ composerids ]
+        genres             array [ genreids ]
+        album              string
+        albumFolder        string
+        albumPath          string
+        albumArtist        string
+        artistFolder       string
+        artistPath         string
+        libraryPath        string
+        bitRate            integer
+        codec              string
+        fileContainer      string
+        duration           float
+        lossless           boolean
+        numberOfChannels   integer
+        sampleRate         intege
       }],
-      albums: [{
-        type:               album
-        id:                 string
-        name:               string
-        displayName:        string
-        sortName:           string
-        artists:            array [ artistids ]
-        composers:          array [ composerids ]
-        genres:             array [ genreids ]
-        tracks:             array [ trackids ]
+      albums [{
+        type               album
+        id                 string
+        name               string
+        displayName        string
+        sortName           string
+        artists            array [ artistids ]
+        composers          array [ composerids ]
+        genres             array [ genreids ]
+        tracks             array [ trackids ]
       }],
-      artists: [{
-        type:               artist
-        id:                 string
-        name:               string
-        displayName:        string
-        sortName:           string
-        albums:             array [ albumids ]
-        composers:          array [ composerids ]
-        genres:             array [ genreids ]
-        tracks:             array [ trackids ]
+      artists [{
+        type               artist
+        id                 string
+        name               string
+        displayName        string
+        sortName           string
+        albums             array [ albumids ]
+        composers          array [ composerids ]
+        genres             array [ genreids ]
+        tracks             array [ trackids ]
       }],
-      composers: [{
-        type:               composer
-        id:                 string
-        name:               string
-        displayName:        string
-        sortName:           string
-        albums:             array [ albumids ]
-        artists:            array [ artistids ]
-        composers:          array [ composerids ]
-        genres:             array [ genreids ]
-        tracks:             array [ trackids ]
+      composers [{
+        type               composer
+        id                 string
+        name               string
+        displayName        string
+        sortName           string
+        albums             array [ albumids ]
+        artists            array [ artistids ]
+        composers          array [ composerids ]
+        genres             array [ genreids ]
+        tracks             array [ trackids ]
       }],
-      genres: [{
-        type:               genre
-        id:                 string
-        name:               string
-        displayName:        string
-        sortName:           string
-        albums:             array [ albumids ]
-        artists:            array [ artistids ]
-        composers:          array [ composerids ] 
-        tracks:             array [ trackids ]
+      genres [{
+        type               genre
+        id                 string
+        name               string
+        displayName        string
+        sortName           string
+        albums             array [ albumids ]
+        artists            array [ artistids ]
+        composers          array [ composerids ] 
+        tracks             array [ trackids ]
       }]
     }
 
