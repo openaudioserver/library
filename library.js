@@ -47,13 +47,37 @@ async function load (libraryPaths) {
     }
   }
   const objectIndex = {}
+  const mediaIndex = {}
   for (const key in library) {
     for (const object of library[key]) {
       objectIndex[object.id] = object
+      if (key === 'media') {
+        mediaIndex[object.filePath] = object
+      }
     }
   }
-  library.getObject = getObject
-  library.getObjects = getObjects
+  library.getObject = (idOrFilePath) => {
+    if (idOrFilePath.startsWith('/')) {
+      if (mediaIndex[idOrFilePath]) {
+        return copyItem(mediaIndex[idOrFilePath])
+      }
+      return
+    }
+    if (!objectIndex[idOrFilePath]) {
+      return
+    }
+    return copyItem(objectIndex[id])
+  }
+  library.getObjects = (collection, options) => {
+    const unfilteredResults = []
+    for (const object of collection) {
+      const item = copyItem(object)
+      unfilteredResults.push(item)
+    }
+    const results = filter(unfilteredResults, options)
+    sort(results, options)
+    return paginate(results, options)
+  }
   return library
 }
 
@@ -105,24 +129,6 @@ async function existsAsync (itemPath) {
 
 function normalize (text) {
   return text.toLowerCase().replace(/[\W_]+/g, ' ')
-}
-
-function getObject(id) {
-  if (!objectIndex[id]) {
-    return null
-  }
-  return copyItem(objectIndex[id])
-}
-
-function getObjects(collection, options) {
-  const unfilteredResults = []
-  for (const object of collection) {
-    const item = copyItem(object)
-    unfilteredResults.push(item)
-  }
-  const results = filter(unfilteredResults, options)
-  sort(results, options)
-  return paginate(results, options)
 }
 
 function copyItem (source) {
