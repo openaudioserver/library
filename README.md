@@ -80,7 +80,7 @@ Compress the index with gzip
         duration           float
         lossless           boolean
         numberOfChannels   integer
-        sampleRate         intege
+        sampleRate         integer
       }],
       albums [{
         type               album
