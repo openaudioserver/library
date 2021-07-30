@@ -32,12 +32,22 @@ async function commandLineStart () {
 }
 
 async function load (libraryPaths) {
+  const idIndex = {}
+  const filePathIndex = {}
   const library = {
     media: [],
     albums: [],
     artists: [],
     composers: [],
-    genres: []
+    genres: [],
+    indexArray: (array) => {
+      for (const object of array) {
+        idIndex[object.id] = object
+        if (object.filePath) {
+          filePathIndex[object.filePath] = object
+        }
+      }
+    }
   }
   if (libraryPaths.length === 1) {
     await loadLibraryData(libraryPaths[0], library)
@@ -46,48 +56,50 @@ async function load (libraryPaths) {
       await loadLibraryData(libraryPath, library)
     }
   }
-  const objectIndex = {}
-  const mediaIndex = {}
+  remapDuplicateEntities(library)
   for (const key in library) {
-    for (const object of library[key]) {
-      objectIndex[object.id] = object
-      if (key === 'media') {
-        mediaIndex[object.filePath] = object
+    library.indexArray(library[key])
+  }
+  library.getObject = (idOrFilePath) => {
+    if (idOrFilePath.startsWith('/')) {
+      if (filePathIndex[idOrFilePath]) {
+        return copyItem(library, filePathIndex[idOrFilePath])
+      }
+      return
+    }
+    if (!idIndex[idOrFilePath]) {
+      return
+    }
+    return copyItem(library, idIndex[idOrFilePath])
+  }
+  library.getObjects = (collection, options) => {
+    const unfilteredResults = []
+    for (const object of collection) {
+      const item = copyItem(library, object)
+      unfilteredResults.push(item)
+    }
+    const results = filter(unfilteredResults, options)
+    sort(results, options)
+    return paginate(results, options)
+  }
+  return library
+}
+
+async function remapDuplicateEntities (library) {
+  const remappings = {}
+  for (const collection of ['composers', 'artists', 'genres']) {
+    const uniques = {}
+    for (const entity of library[collection]) {
+      const normalizedName = normalize(entity.name)
+      if (uniques[normalizedName]) {
+        remappings[entity.id] = remappings[normalizedName].id
+        library[collection].splice(library[collection].indexOf(entity), 1)
+      } else {
+        uniques[normalizedName] = entity
       }
     }
   }
-  const remappings = {}
-  const uniqueArtists = {}
-  for (const artist of library.artists) {
-    const normalizedName = normalize(artist.name)
-    if (uniqueArtists[normalizedName]) {
-      remappings[artist.id] = remappings[normalizedName].id
-      library.artists.splice(library.artists.indexOf(artist), 1)
-    } else {
-      uniqueArtists[normalizedName] = artist
-    }
-  }
-  const uniqueGenres = {}
-  for (const genre of library.genres) {
-    const normalizedName = normalize(genre.name)
-    if (uniqueGenres[normalizedName]) {
-      remappings[genre.id] = remappings[normalizedName].id
-      library.genres.splice(library.genres.indexOf(genre), 1)
-    } else {
-      uniqueGenres[normalizedName] = genre
-    }
-  }
-  const uniqueComposers = {}
-  for (const composer of library.composers) {
-    const normalizedName = normalize(composer.name)
-    if (uniqueComposers[normalizedName]) {
-      remappings[composer.id] = remappings[normalizedName].id
-      library.composers.splice(library.composers.indexOf(composer), 1)
-    } else {
-      uniqueComposers[normalizedName] = composer
-    }
-  }
-  for (const collection of [ 'albums', 'composers', 'artists', 'genres', 'media']) {
+  for (const collection of ['albums', 'composers', 'artists', 'genres', 'media']) {
     for (const item of library[collection]) {
       for (const field in collection) {
         if (!item[field] || !Array.isArray(item[field]) || !item[field].length || !item[0].substring) {
@@ -101,29 +113,6 @@ async function load (libraryPaths) {
       }
     }
   }
-  library.getObject = (idOrFilePath) => {
-    if (idOrFilePath.startsWith('/')) {
-      if (mediaIndex[idOrFilePath]) {
-        return copyItem(mediaIndex[idOrFilePath])
-      }
-      return
-    }
-    if (!objectIndex[idOrFilePath]) {
-      return
-    }
-    return copyItem(objectIndex[id])
-  }
-  library.getObjects = (collection, options) => {
-    const unfilteredResults = []
-    for (const object of collection) {
-      const item = copyItem(object)
-      unfilteredResults.push(item)
-    }
-    const results = filter(unfilteredResults, options)
-    sort(results, options)
-    return paginate(results, options)
-  }
-  return library
 }
 
 async function loadLibraryData (libraryPath, libraryData) {
@@ -176,7 +165,7 @@ function normalize (text) {
   return text.toLowerCase().replace(/[\W_]+/g, ' ')
 }
 
-function copyItem (source) {
+function copyItem (library, source) {
   const item = {}
   for (const key in source) {
     if (!Array.isArray(source[key])) {
@@ -186,7 +175,7 @@ function copyItem (source) {
     item[key] = []
     for (const i in item[key]) {
       if (item[key][i] && item[key][i].length && item[key][i].indexOf('_')) {
-        const entity = getObject(item[key][i])
+        const entity = library.getObject(item[key][i])
         item[key][i] = {
           id: entity.id,
           type: entity.type,
@@ -214,7 +203,7 @@ function paginate (array, options) {
     data: array,
     offset,
     limit,
-    total: sizeWas,
+    total: sizeWas
   }
 }
 
@@ -230,7 +219,7 @@ function filter (array, options) {
         continue
       }
       const normalized = normalize(value)
-      const matchType = normalize(options[`${field}Match`])
+      const matchType = normalize(options[`${group}Match`])
       const found = matchInArray(array, matchType, normalized)
       if (!found || !found.length) {
         continue
@@ -244,7 +233,7 @@ function filter (array, options) {
         continue
       }
       const normalized = normalize(value)
-      const matchType = normalize(options[`${field}Match`])
+      const matchType = normalize(options[`${group}Match`])
       const found = matchInArray(array, matchType, normalized)
       if (!found || !found.length) {
         continue
@@ -258,14 +247,14 @@ function filter (array, options) {
         continue
       }
       const normalized = normalize(value)
-      const matchType = normalize(options[`${field}Match`])
+      const matchType = normalize(options[`${group}Match`])
       const found = matchInArray(array, matchType, normalized)
       if (!found || !found.length) {
         continue
       }
     }
     if (options.keyword) {
-      const normalized = normalize(options.keyword) 
+      const normalized = normalize(options.keyword)
       const matchType = normalize(options.keywordMatch)
       const found = matchValue(item, 'name', matchType, normalized)
       if (!found) {
@@ -281,9 +270,9 @@ function sort (array, options) {
   if (!options.sort) {
     return array
   }
-  const sortField = option.sort
-  const sortDirection = option.sortDirection
-  array.sort(a, b => {
+  const sortField = options.sort
+  const sortDirection = options.sortDirection
+  array.sort((a, b) => {
     if (sortDirection === 'DESC') {
       if (!a[sortField]) {
         return 1
@@ -324,7 +313,7 @@ function matchInArray (array, matchType, value) {
   } else if (matchType === 'exclude' || matchType === 'excludes') {
     return array.filter(entity => normalize(entity.name).indexOf(normalizedValue) === -1)
   }
-  return array.filter(entity => normalize(entity.name) === normalized)
+  return array.filter(entity => normalize(entity.name) === normalizedValue)
 }
 
 function matchValue (item, property, matchType, value) {
