@@ -135,10 +135,14 @@ function copyItem (source) {
     item[key] = []
     for (const i in item[key]) {
       if (item[key][i] && item[key][i].length && item[key][i].indexOf('_')) {
-        item[key][i] = getObject(item[key][i]).name
+        const entity = getObject(item[key][i])
+        item[key][i] = {
+          id: entity.id,
+          type: entity.type,
+          name: entity.name
+        }
       }
     }
-  }
   return item
 }
 
@@ -258,15 +262,15 @@ function sort (array, options) {
 function matchInArray (array, matchType, value) {
   const normalizedValue = normalize(value)
   if (matchType === 'start' || matchType === 'starts') {
-    return array.filter(name => normalize(name).startsWith(normalizedValue))
+    return array.filter(entity => normalize(entity.name).startsWith(normalizedValue))
   } else if (matchType === 'end' || matchType === 'ends') {
-    return array.filter(name => normalize(name).endsWith(normalizedValue))
+    return array.filter(entity => normalize(entity.name).endsWith(normalizedValue))
   } else if (matchType === 'contain' || matchType === 'contains') {
-    return array.filter(name => normalize(name).indexOf(normalizedValue) > -1)
+    return array.filter(entity => normalize(entity.name).indexOf(normalizedValue) > -1)
   } else if (matchType === 'exclude' || matchType === 'excludes') {
-    return array.filter(name => normalize(name).indexOf(normalizedValue) === -1)
+    return array.filter(entity => normalize(entity.name).indexOf(normalizedValue) === -1)
   }
-  return array.filter(name => normalize(name) === normalized)
+  return array.filter(entity => normalize(entity.name) === normalized)
 }
 
 function matchValue (item, property, matchType, value) {
