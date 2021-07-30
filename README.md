@@ -71,13 +71,29 @@ Load the library:
 
 ## Using the media index with NodeJS
 
-Library objects can be retrieved with an ID value.  When using this method arrays of ids will be converted into names.
+You can use NodeJS to access objects and work with the library's media, artists, genres, composers and albums arrays.  The id arrays convert to objects with name, type and id.
 
-    library.getObject(id)
+Library objects can be retrieved with an ID:
 
-Library arrays can be filtered, sorted, and paginated for you.  Any array field can be used as a filter with different matching methods.  When using this method arrays of ids will be converted into names.  Default matching is `equal` and default sort is `asc`.
+    NODEJS library.getObject(albumid)
 
-    library.getObjects(array, {
+    OBJECT RESPONSE {
+      data: {
+        type               album
+        id                 string
+        name               string
+        displayName        string
+        sortName           string
+        artists            array [ artists ]
+        composers          array [ composers ]
+        genres             array [ genres ]
+        tracks             array [ tracks ]
+      }
+    }
+
+Library arrays can be filtered, sorted and paginated:
+
+    NODEJS library.getObjects(library.albums, {
       sort                 string
       sortDirection        string asc|desc
       offset               integer
@@ -87,6 +103,38 @@ Library arrays can be filtered, sorted, and paginated for you.  Any array field 
       <field>              string
       <field>Match         string
     })
+
+    OBJECT RESPONSE  {
+      offset,
+      limit,
+      total,
+      data: [{
+        type               track
+        id                 string
+        path               string
+        size               integer
+        title              string
+        comment            string
+        displayTitle       string
+        sortTitle          string
+        year               integer
+        artists            array [ artists ]
+        composers          array [ composers ]
+        genres             array [ genres ]
+        album              string
+        albumFolder        string
+        albumArtist        string
+        artistFolder       string
+        libraryPath        string
+        bitRate            integer
+        codec              string
+        fileContainer      string
+        duration           float
+        lossless           boolean
+        numberOfChannels   integer
+        sampleRate         integer
+      }]
+    }
 
 [Top of page](#documentation)
 

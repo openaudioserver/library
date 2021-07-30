@@ -143,7 +143,10 @@ function copyItem (source) {
         }
       }
     }
-  return item
+  }
+  return {
+    data: item
+  }
 }
 
 function paginate (array, options) {
