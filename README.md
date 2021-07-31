@@ -1,94 +1,157 @@
-# Library Index
+# Library
 
-This is a media library scanner for NodeJS that asynchronously traverses your library root folder(s) and catalogs media files, indexes some metadata and file information, and saves a JSON catalog for music software.   Your folder structure should be `/library/artist/album/file`.  Each library root folder you specify will save a `library.json` file indexing its contents.  When you load your library these files are merged together into a single library.  Library objects have ids that are sequential across your entire library.
-
-You can clone the project and run it from a command line:
-
-    $ node scanner.js /path/to/music /optional/second/path
-
-Or use it as a module in NodeJS to support your project: 
-
-    const libraryIndex = require('library-index)
-    const library = await libraryIndex.load(['/path/to/music', '/other/path/to/music'])
+Library indexes all the files within one or more folders and maps the folder structure.  It can be extended with modules to index specific types of files and collect metadata information.
 
 ### Documentation
 
-- [Indexing media from command line](#indexing-media-from-command-line)
+- [How to use](#how-to-use)
+- [Index data structure](#index-data-structure)
+- [Modules](#library-modules)
+- [Compressing index files](#compressing-index-files)
+- [Indexing media from command line](#indexing-media-from-the-command-line)
+- [Loading index from command line](#loading-index-from-the-command-line)
 - [Indexing media with NodeJS](#indexing-media-with-nodejs)
 - [Using the media index with NodeJS](#using-the-media-index-with-nodejs)
-- [Library data structure](#library-data-structure)
 
-## Indexing media from command line 
+## How to use 
 
-    $ git clone https//github.com/openaudioserver/library-scanner
-    $ cd library-scanner
-    $ npm install
+You can clone the project and run it from a command line:
 
-Scan a single library path:
+    $ git clone https//github.com/openaudioserver/library
+    $ cd library
+    $ node scanner.js /path/to/files
 
-    $ node scanner.js /path/to/music
+It can work with multiple paths:
 
-Scan a library with multiple folders:
+    $ node scanner.js /path/to/files /optional/second/path
 
-    $ node scanner.js /path/to/music /path/to/more/music /path/to/other/music
+And load modules from the command line:
 
-Compress the index with gzip:
+    $ node scanner.js @openaudioserver/library-music /path/to/files
 
-    $ GZIP=true node scanner.js /path/to/music
+Or use it as a module in NodeJS to support your project: 
 
-Loading a library from the command line outputs the JSON data:
+    const Library = require('library')
+    const library = await Library.load([
+      '/path/to/music', 
+      '/other/path/to/music'
+      ], [
+        '@openaudioserver/library-music'
+    ])
 
-    $ node library.js /path/to/music /path/to/more/music /path/to/other/music
+[Top of page](#documentation)    
+
+## Index data structure
+
+This is the data structure of the index.  Files can be sorted, filtered and paginated.  The tree maps the folder nesting structure.
+
+    LIBRARY INDEX {
+      files [{
+        type               file
+        id                 string
+        file               string
+        path               string
+        size               integer
+      }],
+      tree: {
+        type               folder
+        id                 string
+        folder             string
+        path               string
+        items              array [{folder|file}]
+      }
+    }
+
+[Top of page](#documentation)
+
+### Library modules
+
+| Module name                    | Description                                                                                                           |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| @openaudioserver/library-music | Indexes library files for `MP3` and `FLAC` media and adds songs, albums, genres, and credited persons to your library | 
+
+[Top of page](#documentation)
+
+### Compressing index files
+
+JSON is very verbose and can be heavily-compressed by setting an environment variable:
+
+    $ export GZIP_LIBRARY_DATA=true
+
+You can configure this permanently in Ubuntu:
+
+    $ echo "GZIP_LIBRARY_DATA=true" >> ~/.bashrc
+
+Specify it when scanning or loading libraries:
+
+    $ GZIP_LIBRARY_DATA=true node scanner.js /path/to/music
+
+    $ GZIP_LIBRARY_DATA=true node library.js /path/to/music
+
+[Top of page](#documentation)
+
+## Indexing media from the command line 
+
+The command line arguments are module names and then paths:
+
+    $ node scanner.js module1 module2 moduleN path1
+
+    $ node scanner.js /path/to/folder
+
+    $ node scanner.js @openaudioserver/library-music /path/to/music
+
+[Top of page](#documentation)
+
+## Loading media from the command line 
+
+The command line arguments are module names and then paths:
+
+    $ node library.js @openaudioserver/library-music /path/to/music /path/to/more/music /path/to/other/music
 
 [Top of page](#documentation)
 
 ## Indexing media with NodeJS
 
-    const libraryIndex = require('@openaudioserver/library-index')
+    const Library = require('@openaudioserver/library')
 
-Run the scanner:
+In NodeJS the module names and paths are specified using arrays:
 
-    await libraryIndex.scan([
-      '/path/to/music',
-      '/path/to/more/music',
-      '/path/to/other/music'
+    await Library.scan([
+        '@openaudioserver/library-music'
+    ], [
+      '/path/to/music'
     ])
 
 Load the library:
 
-    const library = await libraryIndex.load([
-      '/path/to/music',
-      '/path/to/more/music',
-      '/path/to/other/music'
+    await Library.load([
+        '@openaudioserver/library-music'
+    ], [
+      '/path/to/music'
     ])
 
 [Top of page](#documentation)
 
 ## Using the media index with NodeJS
 
-You can use NodeJS to access objects and work with the library's media, artists, genres, composers and albums arrays.  The id arrays convert to objects with name, type and id.
+You can use NodeJS to access objects and work with arrays of objects.
 
-Library objects can be retrieved with an ID:
+Objects can be retrieved with an ID:
 
-    NODEJS library.getObject(albumid)
+    NODEJS library.getObject(fileid)
 
     OBJECT RESPONSE {
       data: {
         type               album
         id                 string
-        name               string
-        displayName        string
-        sortName           string
-        artists            array [ artists ]
-        composers          array [ composers ]
-        genres             array [ genres ]
-        tracks             array [ tracks ]
+        file               string
+        size               integer
       }
     }
 
 Library arrays can be filtered, sorted and paginated:
 
-    NODEJS library.getObjects(library.albums, {
+    NODEJS library.getObjects(library.files, {
       sort                 string
       sortDirection        string asc|desc
       offset               integer
@@ -104,109 +167,10 @@ Library arrays can be filtered, sorted and paginated:
       limit,
       total,
       data: [{
-        type               track
-        id                 string
-        path               string
-        size               integer
-        title              string
-        comment            string
-        displayTitle       string
-        sortTitle          string
-        year               integer
-        artists            array [ artists ]
-        composers          array [ composers ]
-        genres             array [ genres ]
-        album              string
-        albumFolder        string
-        albumArtist        string
-        artistFolder       string
-        libraryPath        string
-        bitRate            integer
-        codec              string
-        fileContainer      string
-        duration           float
-        lossless           boolean
-        numberOfChannels   integer
-        sampleRate         integer
-      }]
-    }
-
-[Top of page](#documentation)
-
-## Library data structure
-
-This is the data structure of the index.
-
-    LIBRARY OBJECT {
-      media [{
-        type               track
-        id                 string
-        path               string
-        size               integer
-        title              string
-        comment            string
-        displayTitle       string
-        sortTitle          string
-        year               integer
-        artists            array [ artistids ]
-        composers          array [ composerids ]
-        genres             array [ genreids ]
-        album              string
-        albumFolder        string
-        albumArtist        string
-        artistFolder       string
-        libraryPath        string
-        bitRate            integer
-        codec              string
-        fileContainer      string
-        duration           float
-        lossless           boolean
-        numberOfChannels   integer
-        sampleRate         integer
-      }],
-      albums [{
         type               album
         id                 string
-        name               string
-        displayName        string
-        sortName           string
-        artists            array [ artistids ]
-        composers          array [ composerids ]
-        genres             array [ genreids ]
-        tracks             array [ trackids ]
-      }],
-      artists [{
-        type               artist
-        id                 string
-        name               string
-        displayName        string
-        sortName           string
-        albums             array [ albumids ]
-        composers          array [ composerids ]
-        genres             array [ genreids ]
-        tracks             array [ trackids ]
-      }],
-      composers [{
-        type               composer
-        id                 string
-        name               string
-        displayName        string
-        sortName           string
-        albums             array [ albumids ]
-        artists            array [ artistids ]
-        genres             array [ genreids ]
-        tracks             array [ trackids ]
-      }],
-      genres [{
-        type               genre
-        id                 string
-        name               string
-        displayName        string
-        sortName           string
-        albums             array [ albumids ]
-        artists            array [ artistids ]
-        composers          array [ composerids ] 
-        tracks             array [ trackids ]
+        file               string
+        size               integer
       }]
     }
 

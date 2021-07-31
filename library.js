@@ -31,15 +31,16 @@ async function commandLineStart () {
   return process.exit(0)
 }
 
-async function load (libraryPaths) {
+async function load (libraryPaths, modules) {
   const idIndex = {}
   const filePathIndex = {}
   const library = {
-    media: [],
-    albums: [],
-    artists: [],
-    composers: [],
-    genres: [],
+    api: {
+      files: {
+        get: require('./api/get.js'),
+        list: require('./api/list.js')
+      }
+    },
     indexArray: (array) => {
       for (const object of array) {
         idIndex[object.id] = object
@@ -47,6 +48,28 @@ async function load (libraryPaths) {
           filePathIndex[object.filePath] = object
         }
       }
+    },
+    getObject: (idOrFilePath) => {
+      if (idOrFilePath.startsWith('/')) {
+        if (filePathIndex[idOrFilePath]) {
+          return copyItem(library, filePathIndex[idOrFilePath])
+        }
+        return
+      }
+      if (!idIndex[idOrFilePath]) {
+        return
+      }
+      return copyItem(library, idIndex[idOrFilePath])
+    },
+    getObjects: (collection, options) => {
+      const unfilteredResults = []
+      for (const object of collection) {
+        const item = copyItem(library, object)
+        unfilteredResults.push(item)
+      }
+      const results = filter(unfilteredResults, options)
+      sort(results, options)
+      return paginate(results, options)
     }
   }
   if (libraryPaths.length === 1) {
@@ -56,67 +79,20 @@ async function load (libraryPaths) {
       await loadLibraryData(libraryPath, library)
     }
   }
-  remapDuplicateEntities(library)
+  for (const moduleName of modules) {
+    const module = require(moduleName)
+    module.load(library)
+  }
   for (const key in library) {
-    library.indexArray(library[key])
-  }
-  library.getObject = (idOrFilePath) => {
-    if (idOrFilePath.startsWith('/')) {
-      if (filePathIndex[idOrFilePath]) {
-        return copyItem(library, filePathIndex[idOrFilePath])
-      }
-      return
+    if (Array.isArray(library[key])) {
+      library.indexArray(library[key])
     }
-    if (!idIndex[idOrFilePath]) {
-      return
-    }
-    return copyItem(library, idIndex[idOrFilePath])
-  }
-  library.getObjects = (collection, options) => {
-    const unfilteredResults = []
-    for (const object of collection) {
-      const item = copyItem(library, object)
-      unfilteredResults.push(item)
-    }
-    const results = filter(unfilteredResults, options)
-    sort(results, options)
-    return paginate(results, options)
   }
   return library
 }
 
-async function remapDuplicateEntities (library) {
-  const remappings = {}
-  for (const collection of ['composers', 'artists', 'genres']) {
-    const uniques = {}
-    for (const entity of library[collection]) {
-      const normalizedName = normalize(entity.name)
-      if (uniques[normalizedName]) {
-        remappings[entity.id] = remappings[normalizedName].id
-        library[collection].splice(library[collection].indexOf(entity), 1)
-      } else {
-        uniques[normalizedName] = entity
-      }
-    }
-  }
-  for (const collection of ['albums', 'composers', 'artists', 'genres', 'media']) {
-    for (const item of library[collection]) {
-      for (const field in collection) {
-        if (!item[field] || !Array.isArray(item[field]) || !item[field].length || !item[0].substring) {
-          continue
-        }
-        for (const i in item[field]) {
-          if (remappings[item[field][i]]) {
-            item[field][i] = remappings[item[field][i]]
-          }
-        }
-      }
-    }
-  }
-}
-
 async function loadLibraryData (libraryPath, libraryData) {
-  const newData = await loadJSONFile(libraryPath, 'library.json')
+  const newData = await loadJSONFile(libraryPath, 'index.json')
   for (const key in newData) {
     if (key === 'media') {
       newData[key].libraryPath = libraryPath
