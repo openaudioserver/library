@@ -111,6 +111,7 @@ The command line arguments are module names and then paths:
 
 In NodeJS you specify modules and paths using a string or arrays:
 
+    const Library = require('@openaudioserver/library')
     await Library.scan('/path/to/files')
     await Library.scan('@openaudioserver/library-music', '/path/to/music')
     await Library.scan('@openaudioserver/library-music', [
@@ -121,6 +122,7 @@ In NodeJS you specify modules and paths using a string or arrays:
 
 Load your library by passing the same parameters that built it:
 
+    const Library = require('@openaudioserver/library')
     const fileLibrary = await Library.load('/path/to/files')
     const musicLibrary = await Library.load('@openaudioserver/library-music', '/path/to/music')
     const bigMusicLibrary = await Library.load('@openaudioserver/library-music', [
@@ -129,11 +131,13 @@ Load your library by passing the same parameters that built it:
       '/music-3/music'
     ])
 
-## Using the Library API with NodeJS
+## Using the API with NodeJS
 
 File information can be retrieved with an ID:
 
-    METHOD library.api.files.get(fileid)
+    const Library = require('@openaudioserver/library')
+    const fileLibrary = await Library.load('/path/to/files')
+    const file = await fileLibrary.api.files.get(fileid)
 
     RESPONSE {
       data: {
@@ -146,7 +150,9 @@ File information can be retrieved with an ID:
 
 The files array can be sorted, filtered and paginated:
 
-    METHOD library.api.files.list({
+    const Library = require('@openaudioserver/library')
+    const fileLibrary = await Library.load('/path/to/files')
+    const response = await fileLibrary.api.files.list({
       sort                 string
       sortDirection        string asc|desc
       offset               integer
@@ -168,44 +174,6 @@ The files array can be sorted, filtered and paginated:
         size               integer
       }]
     }
-
-The files API builds upon Library's API for data:
-
-    METHOD library.getObject(id)
-
-    RESPONSE {
-      data: {
-        type               string
-        id                 string
-        file               string
-        size               integer
-      }
-    }
-
-    METHOD library.getObjects(array, {
-      sort                 string
-      sortDirection        string asc|desc
-      offset               integer
-      limit                integer
-      keyword              string
-      keywordMatch         string equal|start|end|exclude|contain
-      <property>           string
-      <property>Match      string
-    })
-
-    RESPONSE  {
-      offset               integer
-      limit                integer 
-      total                integer
-      data: [{
-        type               string
-        id                 string
-        file               string
-        size               integer
-      }]
-    }
-
-
 
 [Top of page](#documentation)
 

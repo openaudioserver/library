@@ -1,3 +1,3 @@
-module.exports = library, options => {
+module.exports = async (library, options) => {
   return library.getObjects(library.files, options)
 }

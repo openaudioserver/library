@@ -1,4 +1,4 @@
-module.exports = library, options => {
+module.exports = async (library, options) => {
   const file = library.getObject(options.id)
   if (!file) {
     console.error('invalid file id', options)
