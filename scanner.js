@@ -17,21 +17,26 @@ async function commandLineStart () {
   const moduleNames = []
   let index = 2
   while (true) {
+    if (!process.argv[index]) {
+      break
+    }
     try {
-      require.resolve(folderPath)
-      moduleNames.push(folderPath)
+      require.resolve(process.argv[index])
+      moduleNames.push(process.argv[index])
     } catch (error) {
       break
     }
     index++
   }
   while (true) {
-    const folderPath = process.argv[index]
-    const exists = await fs.existsSync(folderPath)
+    if (!process.argv[index]) {
+      break
+    }
+    const exists = await fs.existsSync(process.argv[index])
     if (!exists) {
       break
     }
-    libraryPaths.push(folderPath)
+    libraryPaths.push(process.argv[index])
     index++
   }
   await scan(libraryPaths, moduleNames)
@@ -40,14 +45,22 @@ async function commandLineStart () {
 }
 
 async function scan (libraryPaths, moduleNames) {
+  if (!Array.isArray(libraryPaths)) {
+    libraryPaths = [ libraryPaths ]
+  }
+  if (moduleNames && !Array.isArray(moduleNames)) {
+    moduleNames = [ moduleNames ]
+  }  
   const startTime = process.hrtime()
   for (const libraryPath of libraryPaths) {
     const library = await scanLibrary(libraryPath)
-    for (const moduleName of moduleNames) {
-      const module = require(moduleName)
-      if (module.scan) {
-        console.log('[indexer]', 'module scanning library', moduleName)
-        await module.scan(library, libraryPath)
+    if (moduleNames) {
+      for (const moduleName of moduleNames) {
+        const module = require(moduleName)
+        if (module.scan) {
+          console.log('[indexer]', 'module scanning library', moduleName)
+          await module.scan(library, libraryPath)
+        }
       }
     }
   }

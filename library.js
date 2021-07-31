@@ -16,22 +16,43 @@ if (process.argv[1] === __filename) {
 
 async function commandLineStart () {
   const libraryPaths = []
+  const moduleNames = []
   let index = 2
   while (true) {
-    const folderPath = process.argv[index]
-    const exists = await existsAsync(folderPath)
+    if (!process.argv[index]) {
+      break
+    }
+    try {
+      require.resolve(process.argv[index])
+      moduleNames.push(process.argv[index])
+    } catch (error) {
+      break
+    }
+    index++
+  }
+  while (true) {
+    if (!process.argv[index]) {
+      break
+    }
+    const exists = await fs.existsSync(process.argv[index])
     if (!exists) {
       break
     }
-    libraryPaths.push(folderPath)
+    libraryPaths.push(process.argv[index])
     index++
   }
-  const library = await load(libraryPaths, true)
+  const library = await load(libraryPaths, moduleNames)
   console.log(JSON.stringify(library, null, '  '))
   return process.exit(0)
 }
 
-async function load (libraryPaths, modules) {
+async function load (libraryPaths, moduleNames) {
+  if (!Array.isArray(libraryPaths)) {
+    libraryPaths = [ libraryPaths ]
+  }
+  if (moduleNames && !Array.isArray(moduleNames)) {
+    moduleNames = [ moduleNames ]
+  }
   const idIndex = {}
   const filePathIndex = {}
   const library = {
@@ -79,9 +100,11 @@ async function load (libraryPaths, modules) {
       await loadLibraryData(libraryPath, library)
     }
   }
-  for (const moduleName of modules) {
-    const module = require(moduleName)
-    module.load(library)
+  if (moduleNames) {
+    for (const moduleName of moduleNames) {
+      const module = require(moduleName)
+      module.load(library)
+    }
   }
   for (const key in library) {
     if (Array.isArray(library[key])) {
