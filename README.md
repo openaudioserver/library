@@ -1,6 +1,6 @@
 # Library
 
-Library indexes all the files within one or more folders and maps the folder structure.  It can be extended with modules to index specific types of files and collect metadata information.
+Library indexes all the files within one or more folders and maps the folder structure.  It can be extended with modules to index specific types of files and collect metadata information.  The API filters, sorts and paginates your files and anything modules add.
 
 ### Documentation
 
@@ -114,16 +114,20 @@ The command line arguments are module names and then paths:
 
     const Library = require('@openaudioserver/library')
 
-In NodeJS the module names and paths are specified using arrays:
+In NodeJS you specify modules and paths using a string or arrays:
 
+    await Library.scan('/path/to/files')
+    await Library.scan('@openaudioserver/library-music', '/path/to/music')
     await Library.scan([
         '@openaudioserver/library-music'
     ], [
       '/path/to/music'
     ])
 
-Load the library:
+Load your library by passing the same parameters that built it:
 
+    await Library.load('/path/to/files')
+    await Library.load('@openaudioserver/library-music', '/path/to/music')
     await Library.load([
         '@openaudioserver/library-music'
     ], [
@@ -138,7 +142,7 @@ You can use NodeJS to access objects and work with arrays of objects.
 
 Objects can be retrieved with an ID:
 
-    NODEJS library.getObject(fileid)
+    NODEJS library.files.get(fileid)
 
     OBJECT RESPONSE {
       data: {
@@ -151,7 +155,7 @@ Objects can be retrieved with an ID:
 
 Library arrays can be filtered, sorted and paginated:
 
-    NODEJS library.getObjects(library.files, {
+    NODEJS library.files.list({
       sort                 string
       sortDirection        string asc|desc
       offset               integer
