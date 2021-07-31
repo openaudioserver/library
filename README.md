@@ -32,12 +32,7 @@ And load modules from the command line:
 Or use it as a module in NodeJS to support your project: 
 
     const Library = require('library')
-    const library = await Library.load([
-      '/path/to/music', 
-      '/other/path/to/music'
-      ], [
-        '@openaudioserver/library-music'
-    ])
+    const musicLibrary = await Library.load('@openaudioserver/library-music', '/path/to/music')
 
 [Top of page](#documentation)    
 
@@ -118,65 +113,99 @@ In NodeJS you specify modules and paths using a string or arrays:
 
     await Library.scan('/path/to/files')
     await Library.scan('@openaudioserver/library-music', '/path/to/music')
-    await Library.scan([
-        '@openaudioserver/library-music'
-    ], [
-      '/path/to/music'
+    await Library.scan('@openaudioserver/library-music', [
+      '/music-1/music',
+      '/music-2/music',
+      '/music-3/music'
     ])
 
 Load your library by passing the same parameters that built it:
 
-    await Library.load('/path/to/files')
-    await Library.load('@openaudioserver/library-music', '/path/to/music')
-    await Library.load([
-        '@openaudioserver/library-music'
-    ], [
-      '/path/to/music'
+    const fileLibrary = await Library.load('/path/to/files')
+    const musicLibrary = await Library.load('@openaudioserver/library-music', '/path/to/music')
+    const bigMusicLibrary = await Library.load('@openaudioserver/library-music', [
+      '/music-1/music',
+      '/music-2/music',
+      '/music-3/music'
     ])
 
-[Top of page](#documentation)
+## Using the Library API with NodeJS
 
-## Using the media index with NodeJS
+File information can be retrieved with an ID:
 
-You can use NodeJS to access objects and work with arrays of objects.
+    METHOD library.api.files.get(fileid)
 
-Objects can be retrieved with an ID:
-
-    NODEJS library.files.get(fileid)
-
-    OBJECT RESPONSE {
+    RESPONSE {
       data: {
-        type               album
+        type               string
         id                 string
         file               string
         size               integer
       }
     }
 
-Library arrays can be filtered, sorted and paginated:
+The files array can be sorted, filtered and paginated:
 
-    NODEJS library.files.list({
+    METHOD library.api.files.list({
       sort                 string
       sortDirection        string asc|desc
       offset               integer
       limit                integer
       keyword              string
       keywordMatch         string equal|start|end|exclude|contain
-      <field>              string
-      <field>Match         string
+      <property>           string
+      <property>Match      string
     })
 
-    OBJECT RESPONSE  {
-      offset,
-      limit,
-      total,
+    RESPONSE  {
+      offset               integer
+      limit                integer 
+      total                integer
       data: [{
-        type               album
+        type               file
         id                 string
         file               string
         size               integer
       }]
     }
+
+The files API builds upon Library's API for data:
+
+    METHOD library.getObject(id)
+
+    RESPONSE {
+      data: {
+        type               string
+        id                 string
+        file               string
+        size               integer
+      }
+    }
+
+    METHOD library.getObjects(array, {
+      sort                 string
+      sortDirection        string asc|desc
+      offset               integer
+      limit                integer
+      keyword              string
+      keywordMatch         string equal|start|end|exclude|contain
+      <property>           string
+      <property>Match      string
+    })
+
+    RESPONSE  {
+      offset               integer
+      limit                integer 
+      total                integer
+      data: [{
+        type               string
+        id                 string
+        file               string
+        size               integer
+      }]
+    }
+
+
 
 [Top of page](#documentation)
 
