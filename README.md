@@ -8,10 +8,10 @@ Library indexes all the files within one or more folders and maps the folder str
 - [Index data structure](#index-data-structure)
 - [Modules](#library-modules)
 - [Compressing index files](#compressing-index-files)
-- [Indexing media from command line](#indexing-media-from-the-command-line)
+- [Indexing files from command line](#indexing-files-from-the-command-line)
 - [Loading index from command line](#loading-index-from-the-command-line)
-- [Indexing media with NodeJS](#indexing-media-with-nodejs)
-- [Using the media index with NodeJS](#using-the-media-index-with-nodejs)
+- [Indexing files with NodeJS](#indexing-files-with-nodejs)
+- [Using the index with NodeJS](#using-the-files-index-with-nodejs)
 
 ## How to use 
 
@@ -85,7 +85,7 @@ Specify it when scanning or loading libraries:
 
 [Top of page](#documentation)
 
-## Indexing media from the command line 
+## Indexing files from the command line 
 
 The command line arguments are module names and then paths:
 
@@ -97,7 +97,7 @@ The command line arguments are module names and then paths:
 
 [Top of page](#documentation)
 
-## Loading media from the command line 
+## Loading files from the command line 
 
 The command line arguments are module names and then paths:
 
@@ -105,7 +105,7 @@ The command line arguments are module names and then paths:
 
 [Top of page](#documentation)
 
-## Indexing media with NodeJS
+## Indexing files with NodeJS
 
     const Library = require('@openaudioserver/library')
 

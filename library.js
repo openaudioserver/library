@@ -58,8 +58,8 @@ async function load (libraryPaths, moduleNames) {
   const library = {
     api: {
       files: {
-        get: require('./api/get.js'),
-        list: require('./api/list.js')
+        get: require('./api/files.get.js'),
+        list: require('./api/files.list.js')
       }
     },
     indexArray: (array) => {
