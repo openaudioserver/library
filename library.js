@@ -41,12 +41,12 @@ async function commandLineStart () {
     libraryPaths.push(process.argv[index])
     index++
   }
-  const library = await load(libraryPaths, moduleNames)
+  const library = await load(moduleNames, libraryPaths)
   console.log(JSON.stringify(library, null, '  '))
   return process.exit(0)
 }
 
-async function load (libraryPaths, moduleNames) {
+async function load (moduleNames, libraryPaths) {
   if (!Array.isArray(libraryPaths)) {
     libraryPaths = [ libraryPaths ]
   }
