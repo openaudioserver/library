@@ -39,18 +39,18 @@ async function commandLineStart () {
     libraryPaths.push(process.argv[index])
     index++
   }
-  await scan(libraryPaths, moduleNames)
+  await scan(moduleNames, libraryPaths)
   console.log('[indexer]', 'finished scanning')
   return process.exit(0)
 }
 
-async function scan (libraryPaths, moduleNames) {
+async function scan (moduleNames, libraryPaths) {
   if (!Array.isArray(libraryPaths)) {
-    libraryPaths = [ libraryPaths ]
+    libraryPaths = [libraryPaths]
   }
   if (moduleNames && !Array.isArray(moduleNames)) {
-    moduleNames = [ moduleNames ]
-  }  
+    moduleNames = [moduleNames]
+  }
   const startTime = process.hrtime()
   for (const libraryPath of libraryPaths) {
     const library = await scanLibrary(libraryPath)
@@ -78,7 +78,7 @@ async function scanLibrary (libraryPath) {
     tree: {
       type: 'folder',
       id: 'folder_1',
-      folder :'root',
+      folder: 'root',
       contents: []
     }
   }
@@ -104,7 +104,7 @@ async function scanLibrary (libraryPath) {
   console.log('[indexer]', 'library scan time:', stopTime[0] + 's', stopTime[1] / 1000000 + 'ms')
 }
 
-async function indexFolder(library, parentContents, currentFolder, libraryPath) {
+async function indexFolder (library, parentContents, currentFolder, libraryPath) {
   console.log('[indexer]', 'indexing folder', currentFolder)
   const folderContents = fs.readdirSync(currentFolder)
   for (const item of folderContents) {
