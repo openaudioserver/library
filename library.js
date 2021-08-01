@@ -103,7 +103,7 @@ async function load (moduleNames, libraryPaths) {
   if (moduleNames) {
     for (const moduleName of moduleNames) {
       const module = require(moduleName)
-      module.load(library)
+      await module.load(library)
     }
   }
   for (const key in library) {

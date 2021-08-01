@@ -102,6 +102,7 @@ async function scanLibrary (libraryPath) {
   }
   const stopTime = process.hrtime(startTime)
   console.log('[indexer]', 'library scan time:', stopTime[0] + 's', stopTime[1] / 1000000 + 'ms')
+  return library
 }
 
 async function indexFolder (library, parentContents, currentFolder, libraryPath) {
