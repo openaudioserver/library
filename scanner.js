@@ -77,7 +77,7 @@ async function scan (moduleNames, libraryPaths) {
       }
     }
   }
-  if (process.env.GZIP) {
+  if (process.env.GZIP && process.env.GZIP !== 'false') {
     console.log('[indexer]', 'compressing data')
     const compressedData = await gzipAsync(JSON.stringify(library))
     const libraryDataPath = path.join(process.env.DATA_PATH, 'library.json.gzip')
