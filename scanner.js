@@ -76,6 +76,18 @@ async function scan (moduleNames, libraryPaths) {
       }
     }
   }
+  const libraryFileName = process.env.GZIP ? 'library.json.gzip' : 'library.json'
+  const libraryDataPath = path.join(libraryPath, libraryFileName)
+  if (process.env.GZIP) {
+    console.log('[indexer]', 'compressing data')
+    const compressedData = await gzipAsync(JSON.stringify(library))
+    console.log('[indexer]', 'writing compressed data', compressedData.length)
+    await writeFileAsync(libraryDataPath, compressedData)
+  } else {
+    const buffer = Buffer.from(JSON.stringify(library, null, '  '))
+    console.log('[indexer]', 'writing uncompressed data', buffer.length)
+    await writeFileAsync(libraryDataPath, buffer)
+  }
   const stopTime = process.hrtime(startTime)
   console.info('[indexer', 'total scan time:', stopTime[0] + 's', stopTime[1] / 1000000 + 'ms')
 }
@@ -83,8 +95,6 @@ async function scan (moduleNames, libraryPaths) {
 async function scanLibrary (libraryPath) {
   const startTime = process.hrtime()
   console.log('[indexer]', 'scanning library', libraryPath)
-  const libraryFileName = process.env.GZIP ? 'index.json.gzip' : 'index.json'
-  const libraryDataPath = path.join(libraryPath, libraryFileName)
   const library = {
     files: [],
     tree: {
@@ -102,16 +112,6 @@ async function scanLibrary (libraryPath) {
   }
   library.tree.contents.push(folder)
   await indexFolder(library, folder.contents, libraryPath, libraryPath)
-  if (process.env.GZIP) {
-    console.log('[indexer]', 'compressing data')
-    const compressedData = await gzipAsync(JSON.stringify(library))
-    console.log('[indexer]', 'writing compressed data', compressedData.length)
-    await writeFileAsync(libraryDataPath, compressedData)
-  } else {
-    const buffer = Buffer.from(JSON.stringify(library, null, '  '))
-    console.log('[indexer]', 'writing uncompressed data', buffer.length)
-    await writeFileAsync(libraryDataPath, buffer)
-  }
   const stopTime = process.hrtime(startTime)
   console.log('[indexer]', 'library scan time:', stopTime[0] + 's', stopTime[1] / 1000000 + 'ms')
   return library

@@ -115,7 +115,7 @@ async function load (moduleNames, libraryPaths) {
 }
 
 async function loadLibraryData (libraryPath, libraryData) {
-  const newData = await loadJSONFile(libraryPath, 'index.json')
+  const newData = await loadJSONFile(libraryPath)
   for (const key in newData) {
     if (key === 'media') {
       newData[key].libraryPath = libraryPath
@@ -129,8 +129,8 @@ async function loadLibraryData (libraryPath, libraryData) {
   return libraryData
 }
 
-async function loadJSONFile (libraryPath, filename) {
-  const uncompressedFilePath = path.join(libraryPath, filename)
+async function loadJSONFile (libraryPath) {
+  const uncompressedFilePath = path.join(libraryPath, 'library.json')
   const uncompessedFileExists = await existsAsync(uncompressedFilePath)
   if (uncompessedFileExists) {
     const rawData = await readFileAsync(uncompressedFilePath)
@@ -139,7 +139,7 @@ async function loadJSONFile (libraryPath, filename) {
     }
     return JSON.parse(rawData.toString())
   }
-  const gzippedFilePath = path.join(libraryPath, `${filename}.gz`)
+  const gzippedFilePath = path.join(libraryPath, 'library.json.gz')
   const gzippedFileExists = await existsAsync(gzippedFilePath)
   if (gzippedFileExists) {
     const rawData = await readFileAsync(gzippedFilePath)
