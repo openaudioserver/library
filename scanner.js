@@ -3,6 +3,18 @@ const path = require('path')
 const util = require('util')
 const zlib = require('zlib')
 const gzipAsync = util.promisify(zlib.gzip)
+const statAsync = filePath => util.promisify(fs.stat)(filePath)
+const readdirAsync = filePath => util.promisify(fs.readdir)(filePath)
+const writeFileAsync = filePath => util.promisify(fs.writeFile)(filePath)
+const existsAsync = async (filePath) => {
+  const statSync = util.promisify(util.stat)
+  try {
+    const stat = await statSync(filePath)
+    return stat !== undefined && stat !== null
+  } catch (error) {
+    return false
+  }
+}
 
 module.exports = {
   scan
@@ -32,7 +44,7 @@ async function commandLineStart () {
     if (!process.argv[index]) {
       break
     }
-    const exists = await fs.existsSync(process.argv[index])
+    const exists = await existsAsync(process.argv[index])
     if (!exists) {
       break
     }
@@ -94,11 +106,11 @@ async function scanLibrary (libraryPath) {
     console.log('[indexer]', 'compressing data')
     const compressedData = await gzipAsync(JSON.stringify(library))
     console.log('[indexer]', 'writing compressed data', compressedData.length)
-    fs.writeFileSync(libraryDataPath, compressedData)
+    await writeFileAsync(libraryDataPath, compressedData)
   } else {
     const buffer = Buffer.from(JSON.stringify(library, null, '  '))
     console.log('[indexer]', 'writing uncompressed data', buffer.length)
-    fs.writeFileSync(libraryDataPath, buffer)
+    await writeFileAsync(libraryDataPath, buffer)
   }
   const stopTime = process.hrtime(startTime)
   console.log('[indexer]', 'library scan time:', stopTime[0] + 's', stopTime[1] / 1000000 + 'ms')
@@ -107,10 +119,10 @@ async function scanLibrary (libraryPath) {
 
 async function indexFolder (library, parentContents, currentFolder, libraryPath) {
   console.log('[indexer]', 'indexing folder', currentFolder)
-  const folderContents = fs.readdirSync(currentFolder)
+  const folderContents = await readdirAsync(currentFolder)
   for (const item of folderContents) {
     const itemPath = path.join(currentFolder, item)
-    const itemStat = fs.statSync(itemPath)
+    const itemStat = await statAsync(itemPath)
     if (itemStat.isDirectory()) {
       const folder = {
         type: 'folder',
