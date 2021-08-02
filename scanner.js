@@ -5,7 +5,7 @@ const zlib = require('zlib')
 const gzipAsync = util.promisify(zlib.gzip)
 const statAsync = filePath => util.promisify(fs.stat)(filePath)
 const readdirAsync = filePath => util.promisify(fs.readdir)(filePath)
-const writeFileAsync = (filePath, data) => util.promisify(fs.writeFile)(filePath)
+const writeFileAsync = (filePath, data) => util.promisify(fs.writeFile)(filePath, data)
 const existsAsync = async (filePath) => {
   const statSync = util.promisify(util.stat)
   try {
