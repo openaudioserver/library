@@ -15,7 +15,6 @@ if (process.argv[1] === __filename) {
 }
 
 async function commandLineStart () {
-  const libraryPaths = []
   const moduleNames = []
   let index = 2
   while (true) {
@@ -30,75 +29,53 @@ async function commandLineStart () {
     }
     index++
   }
-  while (true) {
-    if (!process.argv[index]) {
-      break
-    }
-    const exists = await fs.existsSync(process.argv[index])
-    if (!exists) {
-      break
-    }
-    libraryPaths.push(process.argv[index])
-    index++
-  }
-  const library = await load(moduleNames, libraryPaths)
+  const library = await load(moduleNames)
   console.log(JSON.stringify(library, null, '  '))
   return process.exit(0)
 }
 
-async function load (moduleNames, libraryPaths) {
-  if (!Array.isArray(libraryPaths)) {
-    libraryPaths = [ libraryPaths ]
-  }
+async function load (moduleNames) {
   if (moduleNames && !Array.isArray(moduleNames)) {
-    moduleNames = [ moduleNames ]
+    moduleNames = [moduleNames]
   }
   const idIndex = {}
   const filePathIndex = {}
-  const library = {
-    api: {
-      files: {
-        get: require('./api/files.get.js'),
-        list: require('./api/files.list.js')
-      }
-    },
-    indexArray: (array) => {
-      for (const object of array) {
-        idIndex[object.id] = object
-        if (object.filePath) {
-          filePathIndex[object.filePath] = object
-        }
-      }
-    },
-    getObject: (idOrFilePath) => {
-      if (idOrFilePath.startsWith('/')) {
-        if (filePathIndex[idOrFilePath]) {
-          return copyItem(library, filePathIndex[idOrFilePath])
-        }
-        return
-      }
-      if (!idIndex[idOrFilePath]) {
-        return
-      }
-      return copyItem(library, idIndex[idOrFilePath])
-    },
-    getObjects: (collection, options) => {
-      const unfilteredResults = []
-      for (const object of collection) {
-        const item = copyItem(library, object)
-        unfilteredResults.push(item)
-      }
-      const results = filter(unfilteredResults, options)
-      sort(results, options)
-      return paginate(results, options)
+  const library = await loadJSONFile()
+  library.api = {
+    files: {
+      get: require('./api/files.get.js'),
+      list: require('./api/files.list.js')
     }
   }
-  if (libraryPaths.length === 1) {
-    await loadLibraryData(libraryPaths[0], library)
-  } else {
-    for (const libraryPath of libraryPaths) {
-      await loadLibraryData(libraryPath, library)
+  library.indexArray = (array) => {
+    for (const object of array) {
+      idIndex[object.id] = object
+      if (object.filePath) {
+        filePathIndex[object.filePath] = object
+      }
     }
+  }
+  library.getObject = (idOrFilePath) => {
+    if (idOrFilePath.startsWith('/')) {
+      if (filePathIndex[idOrFilePath]) {
+        return copyItem(library, filePathIndex[idOrFilePath])
+      }
+      return
+    }
+    if (!idIndex[idOrFilePath]) {
+      return
+    }
+    return copyItem(library, idIndex[idOrFilePath])
+  }
+  library.getObjects = (collection, options) => {
+    const unfilteredResults = []
+    for (const object of collection) {
+      const item = copyItem(library, object)
+      unfilteredResults.push(item)
+    }
+    const results = filter(unfilteredResults, options)
+    sort(results, options)
+    return paginate(results, options)
   }
   if (moduleNames) {
     for (const moduleName of moduleNames) {
@@ -114,23 +91,8 @@ async function load (moduleNames, libraryPaths) {
   return library
 }
 
-async function loadLibraryData (libraryPath, libraryData) {
-  const newData = await loadJSONFile(libraryPath)
-  for (const key in newData) {
-    if (key === 'media') {
-      newData[key].libraryPath = libraryPath
-      newData[key].artistPath = path.join(libraryPath, newData[key].artistFolder)
-      newData[key].albumPath = path.join(libraryPath, newData[key].artistFolder, newData[key].albumFolder)
-      newData[key].filePath = path.join(libraryPath, newData[key].artistFolder, newData[key].albumFolder, newData[key].fileName)
-    }
-    libraryData[key] = libraryData[key] || []
-    libraryData[key] = libraryData[key].concat(newData[key])
-  }
-  return libraryData
-}
-
-async function loadJSONFile (libraryPath) {
-  const uncompressedFilePath = path.join(libraryPath, 'library.json')
+async function loadJSONFile () {
+  const uncompressedFilePath = path.join(process.env.DATA_PATH, 'library.json')
   const uncompessedFileExists = await existsAsync(uncompressedFilePath)
   if (uncompessedFileExists) {
     const rawData = await readFileAsync(uncompressedFilePath)
@@ -139,7 +101,7 @@ async function loadJSONFile (libraryPath) {
     }
     return JSON.parse(rawData.toString())
   }
-  const gzippedFilePath = path.join(libraryPath, 'library.json.gz')
+  const gzippedFilePath = path.join(process.env.DATA_PATH, 'library.json.gz')
   const gzippedFileExists = await existsAsync(gzippedFilePath)
   if (gzippedFileExists) {
     const rawData = await readFileAsync(gzippedFilePath)

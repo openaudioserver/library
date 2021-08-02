@@ -64,8 +64,9 @@ async function scan (moduleNames, libraryPaths) {
     moduleNames = [moduleNames]
   }
   const startTime = process.hrtime()
+  const library = {}
   for (const libraryPath of libraryPaths) {
-    const library = await scanLibrary(libraryPath)
+    await scanLibrary(library, libraryPath)
     if (moduleNames) {
       for (const moduleName of moduleNames) {
         const module = require(moduleName)
@@ -77,7 +78,7 @@ async function scan (moduleNames, libraryPaths) {
     }
   }
   const libraryFileName = process.env.GZIP ? 'library.json.gzip' : 'library.json'
-  const libraryDataPath = path.join(libraryPath, libraryFileName)
+  const libraryDataPath = path.join(process.env.DATA_PATH, libraryFileName)
   if (process.env.GZIP) {
     console.log('[indexer]', 'compressing data')
     const compressedData = await gzipAsync(JSON.stringify(library))
@@ -92,12 +93,12 @@ async function scan (moduleNames, libraryPaths) {
   console.info('[indexer', 'total scan time:', stopTime[0] + 's', stopTime[1] / 1000000 + 'ms')
 }
 
-async function scanLibrary (libraryPath) {
+async function scanLibrary (library, libraryPath) {
   const startTime = process.hrtime()
   console.log('[indexer]', 'scanning library', libraryPath)
-  const library = {
-    files: [],
-    tree: {
+  if (!library.files) {
+    library.files = []
+    library.tree = {
       type: 'folder',
       id: 'folder_1',
       folder: 'root',
