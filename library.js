@@ -111,6 +111,15 @@ async function loadJSONFile () {
     const data = await unzipAsync(rawData)
     return JSON.parse(data.toString())
   }
+  return {
+    files: [],
+    tree: {
+      type: 'folder',
+      id: 'folder_1',
+      folder: 'root',
+      contents: []
+    }
+  }
 }
 
 async function existsAsync (itemPath) {

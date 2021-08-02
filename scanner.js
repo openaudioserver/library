@@ -77,15 +77,15 @@ async function scan (moduleNames, libraryPaths) {
       }
     }
   }
-  const libraryFileName = process.env.GZIP ? 'library.json.gzip' : 'library.json'
-  const libraryDataPath = path.join(process.env.DATA_PATH, libraryFileName)
   if (process.env.GZIP) {
     console.log('[indexer]', 'compressing data')
     const compressedData = await gzipAsync(JSON.stringify(library))
+    const libraryDataPath = path.join(process.env.DATA_PATH, 'library.json.gzip')
     console.log('[indexer]', 'writing compressed data', compressedData.length)
     await writeFileAsync(libraryDataPath, compressedData)
   } else {
     const buffer = Buffer.from(JSON.stringify(library, null, '  '))
+    const libraryDataPath = path.join(process.env.DATA_PATH, 'library.json')
     console.log('[indexer]', 'writing uncompressed data', buffer.length)
     await writeFileAsync(libraryDataPath, buffer)
   }
