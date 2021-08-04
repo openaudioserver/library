@@ -83,11 +83,7 @@ async function load (moduleNames) {
       await module.load(library)
     }
   }
-  for (const key in library) {
-    if (Array.isArray(library[key])) {
-      library.indexArray(library[key])
-    }
-  }
+  library.indexArray(library.files)
   return library
 }
 
