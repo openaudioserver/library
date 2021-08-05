@@ -65,7 +65,7 @@ async function scan (moduleNames, libraryPaths) {
   }
   const Library = require('./library.js')
   const startTime = process.hrtime()
-  const library = Library.load(moduleNames, libraryPaths)
+  const library = await Library.load(moduleNames, libraryPaths)
   for (const libraryPath of libraryPaths) {
     await scanLibrary(library, libraryPath)
     if (moduleNames) {

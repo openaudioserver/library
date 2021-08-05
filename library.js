@@ -88,26 +88,7 @@ async function load (moduleNames) {
 }
 
 async function loadJSONFile () {
-  const uncompressedFilePath = path.join(process.env.DATA_PATH, 'library.json')
-  const uncompessedFileExists = await existsAsync(uncompressedFilePath)
-  if (uncompessedFileExists) {
-    const rawData = await readFileAsync(uncompressedFilePath)
-    if (!rawData || !rawData.length) {
-      return
-    }
-    return JSON.parse(rawData.toString())
-  }
-  const gzippedFilePath = path.join(process.env.DATA_PATH, 'library.json.gz')
-  const gzippedFileExists = await existsAsync(gzippedFilePath)
-  if (gzippedFileExists) {
-    const rawData = await readFileAsync(gzippedFilePath)
-    if (!rawData || !rawData.length) {
-      return
-    }
-    const data = await unzipAsync(rawData)
-    return JSON.parse(data.toString())
-  }
-  return {
+  const blankLibrary = {
     files: [],
     tree: {
       type: 'folder',
@@ -116,6 +97,26 @@ async function loadJSONFile () {
       contents: []
     }
   }
+  const uncompressedFilePath = path.join(process.env.DATA_PATH, 'library.json')
+  const uncompessedFileExists = await existsAsync(uncompressedFilePath)
+  if (uncompessedFileExists) {
+    const rawData = await readFileAsync(uncompressedFilePath)
+    if (!rawData || !rawData.length) {
+      return blankLibrary
+    }
+    return JSON.parse(rawData.toString())
+  }
+  const gzippedFilePath = path.join(process.env.DATA_PATH, 'library.json.gz')
+  const gzippedFileExists = await existsAsync(gzippedFilePath)
+  if (gzippedFileExists) {
+    const rawData = await readFileAsync(gzippedFilePath)
+    if (!rawData || !rawData.length) {
+      return blankLibrary
+    }
+    const data = await unzipAsync(rawData)
+    return JSON.parse(data.toString())
+  }
+  return blankLibrary
 }
 
 async function existsAsync (itemPath) {
