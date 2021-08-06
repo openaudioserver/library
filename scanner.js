@@ -120,7 +120,7 @@ async function indexFolder (library, parentContents, currentFolder, libraryPath)
   const folderContents = await fs.readdir(currentFolder)
   for (const item of folderContents) {
     const itemPath = path.join(currentFolder, item)
-    const itemStat = await fs.fstat(itemPath)
+    const itemStat = await fs.stat(itemPath)
     if (itemStat.isDirectory()) {
       const folder = {
         type: 'folder',
