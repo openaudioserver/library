@@ -39,11 +39,9 @@ async function load (moduleNames) {
   const idIndex = {}
   const filePathIndex = {}
   const library = await loadJSONFile()
-  library.api = {
-    files: {
-      get: require('./api/files.get.js'),
-      list: require('./api/files.list.js')
-    }
+  library.files = {
+    get: require('./api/files.get.js'),
+    list: require('./api/files.list.js')
   }
   library.indexArray = (array) => {
     for (const object of array) {
