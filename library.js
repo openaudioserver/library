@@ -1,10 +1,8 @@
-const fs = require('fs')
+const fs = require('fs').promises
 const path = require('path')
 const util = require('util')
 const zlib = require('zlib')
 const unzipAsync = util.promisify(zlib.unzip)
-const statAsync = util.promisify(fs.stat)
-const readFileAsync = util.promisify(fs.readFile)
 
 module.exports = {
   load
@@ -100,7 +98,7 @@ async function loadJSONFile () {
   const uncompressedFilePath = path.join(process.env.DATA_PATH, 'library.json')
   const uncompessedFileExists = await existsAsync(uncompressedFilePath)
   if (uncompessedFileExists) {
-    const rawData = await readFileAsync(uncompressedFilePath)
+    const rawData = await fs.readFile(uncompressedFilePath)
     if (!rawData || !rawData.length) {
       return blankLibrary
     }
@@ -109,7 +107,7 @@ async function loadJSONFile () {
   const gzippedFilePath = path.join(process.env.DATA_PATH, 'library.json.gz')
   const gzippedFileExists = await existsAsync(gzippedFilePath)
   if (gzippedFileExists) {
-    const rawData = await readFileAsync(gzippedFilePath)
+    const rawData = await fs.readFile(gzippedFilePath)
     if (!rawData || !rawData.length) {
       return blankLibrary
     }
@@ -121,7 +119,7 @@ async function loadJSONFile () {
 
 async function existsAsync (itemPath) {
   try {
-    await statAsync(itemPath)
+    await fs.stat(itemPath)
     return true
   } catch (error) {
     return false

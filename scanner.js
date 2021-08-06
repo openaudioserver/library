@@ -1,15 +1,11 @@
-const fs = require('fs')
+const fs = require('fs').promises
 const path = require('path')
 const util = require('util')
 const zlib = require('zlib')
 const gzipAsync = util.promisify(zlib.gzip)
-const statAsync = filePath => util.promisify(fs.stat)(filePath)
-const readdirAsync = filePath => util.promisify(fs.readdir)(filePath)
-const writeFileAsync = (filePath, data) => util.promisify(fs.writeFile)(filePath, data)
 const existsAsync = async (filePath) => {
-  const statSync = util.promisify(util.stat)
   try {
-    const stat = await statSync(filePath)
+    const stat = await fs.stat(filePath)
     return stat !== undefined && stat !== null
   } catch (error) {
     return false
@@ -83,12 +79,12 @@ async function scan (moduleNames, libraryPaths) {
     const compressedData = await gzipAsync(JSON.stringify(library))
     const libraryDataPath = path.join(process.env.DATA_PATH, 'library.json.gzip')
     console.log('[indexer]', 'writing compressed data', compressedData.length)
-    await writeFileAsync(libraryDataPath, compressedData)
+    await fs.writeFile(libraryDataPath, compressedData)
   } else {
     const buffer = Buffer.from(JSON.stringify(library, null, '  '))
     const libraryDataPath = path.join(process.env.DATA_PATH, 'library.json')
     console.log('[indexer]', 'writing uncompressed data', buffer.length)
-    await writeFileAsync(libraryDataPath, buffer)
+    await fs.writeFile(libraryDataPath, buffer)
   }
   const stopTime = process.hrtime(startTime)
   console.info('[indexer', 'total scan time:', stopTime[0] + 's', stopTime[1] / 1000000 + 'ms')
@@ -121,10 +117,10 @@ async function scanLibrary (library, libraryPath) {
 
 async function indexFolder (library, parentContents, currentFolder, libraryPath) {
   console.log('[indexer]', 'indexing folder', currentFolder)
-  const folderContents = await readdirAsync(currentFolder)
+  const folderContents = await fs.readdir(currentFolder)
   for (const item of folderContents) {
     const itemPath = path.join(currentFolder, item)
-    const itemStat = await statAsync(itemPath)
+    const itemStat = await fs.fstat(itemPath)
     if (itemStat.isDirectory()) {
       const folder = {
         type: 'folder',
