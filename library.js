@@ -149,9 +149,7 @@ function copyItem (library, source) {
       }
     }
   }
-  return {
-    data: item
-  }
+  return item
 }
 
 function paginate (array, options) {
