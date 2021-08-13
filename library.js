@@ -85,8 +85,8 @@ async function load (moduleNames) {
   }
   function indexTreeItem (item) {
     treeIndex[item.id] = item
-    for (const item of item.contents) {
-      indexTreeItem(item)
+    for (const child of item.contents) {
+      indexTreeItem(child)
     }
   }
   indexTreeItem(library.tree)
