@@ -128,6 +128,7 @@ async function indexFolder (library, parentContents, currentFolder, libraryPath)
         type: 'folder',
         folder: item,
         path: itemPath,
+        title: path.basename(itemPath),
         contents: []
       }
       parentContents.push(folder)
@@ -141,6 +142,7 @@ async function indexFolder (library, parentContents, currentFolder, libraryPath)
       extension,
       file: item,
       size: itemStat.size,
+      title: path.basename(itemPath),
       path: itemPath
     }
     parentContents.push(file.id)
