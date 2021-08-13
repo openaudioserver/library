@@ -104,6 +104,7 @@ async function scanLibrary (library, libraryPath) {
   }
   console.log('[indexer]', 'indexing files')
   const folder = {
+    id: `folder_${libraryPath}`,
     type: 'folder',
     path: libraryPath,
     contents: []
@@ -123,6 +124,7 @@ async function indexFolder (library, parentContents, currentFolder, libraryPath)
     const itemStat = await fs.stat(itemPath)
     if (itemStat.isDirectory()) {
       const folder = {
+        id: `folder_${itemPath}`,
         type: 'folder',
         folder: item,
         path: itemPath,
