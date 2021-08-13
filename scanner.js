@@ -97,8 +97,8 @@ async function scanLibrary (library, libraryPath) {
     library.files = []
     library.tree = {
       type: 'folder',
-      id: 'folder_1',
-      folder: 'root',
+      id: 'folder_/library',
+      folder: 'library',
       contents: []
     }
   }
@@ -137,7 +137,7 @@ async function indexFolder (library, parentContents, currentFolder, libraryPath)
     const extension = itemPath.split('.').pop().toLowerCase()
     const file = {
       type: 'file',
-      id: `file_${library.files.length + 1}`,
+      id: `file_${itemPath}`,
       extension,
       file: item,
       size: itemStat.size,
