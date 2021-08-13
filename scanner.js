@@ -143,7 +143,7 @@ async function indexFolder (library, parentContents, currentFolder, libraryPath)
       size: itemStat.size,
       path: itemPath
     }
-    parentContents.push({ type: 'file', id: file.id })
+    parentContents.push(file.id)
     library.files.push(file)
   }
 }

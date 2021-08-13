@@ -87,6 +87,9 @@ async function load (moduleNames) {
     treeIndex[item.id] = item
     if (item.contents && item.contents.length) {
       for (const child of item.contents) {
+        if (child.substring) {
+          continue
+        }
         indexTreeItem(child)
       }
     }
