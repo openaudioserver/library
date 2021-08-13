@@ -155,14 +155,16 @@ function copyItem (library, source) {
       continue
     }
     item[key] = []
-    for (const i in item[key]) {
-      if (item[key][i] && item[key][i].length && item[key][i].indexOf('_')) {
-        const entity = library.getObject(item[key][i])
+    for (const i in source[key]) {
+      if (source[key][i] && source[key][i].length && source[key][i].indexOf('_')) {
+        const entity = library.getObject(source[key][i])
         item[key][i] = {
           id: entity.id,
           type: entity.type,
           name: entity.name
         }
+      } else {
+        item[key][i] = source[key][i]
       }
     }
   }
