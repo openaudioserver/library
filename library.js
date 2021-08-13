@@ -38,7 +38,9 @@ async function load (moduleNames) {
   }
   const idIndex = {}
   const filePathIndex = {}
+  const treeIndex = {}
   const library = await loadJSONFile()
+  library.modules = moduleNames
   library.api = {
     files: {
       get: require('./api/files.get.js'),
@@ -75,6 +77,19 @@ async function load (moduleNames) {
     sort(results, options)
     return paginate(results, options)
   }
+  library.getTreeObject = (id) => {
+    if (!treeIndex[id]) {
+      return
+    }
+    return copyItem(library, treeIndex[id])
+  }
+  function indexTreeItem (item) {
+    treeIndex[item.id] = item
+    for (const item of item.contents) {
+      indexTreeItem(item)
+    }
+  }
+  indexTreeItem(library.tree)
   if (moduleNames) {
     for (const moduleName of moduleNames) {
       const module = require(moduleName)
